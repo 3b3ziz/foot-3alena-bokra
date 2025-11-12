@@ -35,9 +35,9 @@ export interface ValidationResult {
  */
 export const validateGuess = (guess: string, player: Player): ValidationResult => {
   const normalizedGuess = normalize(guess);
-
-  // Exact match on canonical name
   const normalizedCanonical = normalize(player.canonical);
+
+  // 1. Exact match on canonical name
   if (normalizedGuess === normalizedCanonical) {
     return {
       matched: true,
@@ -46,7 +46,7 @@ export const validateGuess = (guess: string, player: Player): ValidationResult =
     };
   }
 
-  // Exact match on aliases
+  // 2. Exact match on aliases
   for (const alias of player.aliases) {
     const normalizedAlias = normalize(alias);
     if (normalizedGuess === normalizedAlias) {
@@ -58,39 +58,60 @@ export const validateGuess = (guess: string, player: Player): ValidationResult =
     }
   }
 
-  // Partial match (last name only)
-  const guessParts = normalizedGuess.split(' ');
+  // 3. Last name only match
   const canonicalParts = normalizedCanonical.split(' ');
-
-  // If guess is a single word and matches last part of canonical name
-  if (guessParts.length === 1 && canonicalParts.length > 1) {
+  if (canonicalParts.length > 1) {
     const lastName = canonicalParts[canonicalParts.length - 1];
-    if (guessParts[0] === lastName) {
+    if (normalizedGuess === lastName) {
+      return {
+        matched: true,
+        canonical: player.canonical,
+        confidence: 0.9
+      };
+    }
+  }
+
+  // 4. Substring matching for short nicknames
+  const lengthRatio = normalizedGuess.length / normalizedCanonical.length;
+
+  // If guess is much shorter (like "ibra" vs "zlatan ibrahimovic")
+  if (lengthRatio < 0.6 && normalizedGuess.length >= 3) {
+    // Check if it's a substring of the canonical name
+    if (normalizedCanonical.includes(normalizedGuess)) {
       return {
         matched: true,
         canonical: player.canonical,
         confidence: 0.8
       };
     }
+
+    // Check if it's a substring of any alias
+    for (const alias of player.aliases) {
+      if (normalize(alias).includes(normalizedGuess)) {
+        return {
+          matched: true,
+          canonical: player.canonical,
+          confidence: 0.8
+        };
+      }
+    }
+
+    // Too short and not a substring - don't match
+    return {
+      matched: false,
+      canonical: null
+    };
   }
 
-  // Use Fuse.js for fuzzy matching
-  const searchSpace = [
-    player.canonical,
-    ...player.aliases
-  ];
-
-  const fuse = new Fuse(searchSpace, {
-    threshold: 0.3, // Lower = more strict (0.0 = exact, 1.0 = anything matches)
-    distance: 100,
+  // 5. Fuse.js fuzzy matching for similar-length strings (typos)
+  const fuse = new Fuse([player.canonical], {
+    threshold: 0.25, // Stricter threshold
     includeScore: true,
-    keys: []
   });
 
   const fuseResults = fuse.search(guess);
 
-  if (fuseResults.length > 0 && fuseResults[0].score !== undefined && fuseResults[0].score < 0.3) {
-    // Good match found with Fuse.js
+  if (fuseResults.length > 0 && fuseResults[0].score !== undefined && fuseResults[0].score < 0.25) {
     return {
       matched: true,
       canonical: player.canonical,
@@ -98,8 +119,8 @@ export const validateGuess = (guess: string, player: Player): ValidationResult =
     };
   }
 
-  // No match, but provide suggestion if close
-  if (fuseResults.length > 0 && fuseResults[0].score !== undefined && fuseResults[0].score < 0.5) {
+  // 6. Provide suggestion if close enough
+  if (fuseResults.length > 0 && fuseResults[0].score !== undefined && fuseResults[0].score < 0.4) {
     return {
       matched: false,
       canonical: null,

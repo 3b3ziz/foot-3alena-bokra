@@ -1,52 +1,26 @@
 /**
  * Scoring system for Career Ladder
+ * Simple guess-based scoring with timer penalties
  */
 
-export const PHASE_SCORING = {
-  phase1: { base: 100, perGuess: -20 },
-  phase2: { base: 70, perGuess: -20 },
-  phase3: { base: 50, perSecond: -2 },
-  phase4: { base: 30, perSecond: -1 }
-} as const;
-
-export const PHASE_NAMES = {
-  1: 'Unordered Clubs',
-  2: 'Order Revealed',
-  3: 'Timer Phase',
-  4: 'Full Timeline'
-} as const;
-
-export type Phase = 1 | 2 | 3 | 4;
-
 /**
- * Calculate score based on phase, guesses, and time
- * @param {Phase} solvedPhase - Phase where player solved (1-4)
- * @param {number} guessesInPhase - Number of guesses in that phase
- * @param {number} secondsElapsed - Seconds elapsed (for phases 3-4)
+ * Calculate score based on total guesses and timer usage
+ * @param {number} totalGuesses - Total number of guesses made
+ * @param {boolean} timerUsed - Whether the timer was activated
  * @returns {number} - Final score
  */
 export const calculateScore = (
-  solvedPhase: Phase,
-  guessesInPhase: number,
-  secondsElapsed: number = 0
+  totalGuesses: number,
+  timerUsed: boolean
 ): number => {
-  let score = 0;
+  let score = 100;
 
-  switch (solvedPhase) {
-    case 1:
-      score = PHASE_SCORING.phase1.base - ((guessesInPhase - 1) * PHASE_SCORING.phase1.perGuess);
-      break;
-    case 2:
-      score = PHASE_SCORING.phase2.base - ((guessesInPhase - 1) * PHASE_SCORING.phase2.perGuess);
-      break;
-    case 3:
-      score = PHASE_SCORING.phase3.base - (secondsElapsed * PHASE_SCORING.phase3.perSecond);
-      break;
-    case 4:
-      score = PHASE_SCORING.phase4.base - (secondsElapsed * PHASE_SCORING.phase4.perSecond);
-      break;
-    default:
-      score = 0;
+  // Deduct points per guess
+  score -= (totalGuesses * 10);
+
+  // Timer penalty
+  if (timerUsed) {
+    score -= 20;
   }
 
   return Math.max(score, 5); // Minimum 5 points
@@ -57,7 +31,7 @@ export const calculateScore = (
  * @param {number} puzzleNumber - Daily puzzle number
  * @param {number} score - Final score
  * @param {number} totalGuesses - Total guesses made
- * @param {Phase} solvedPhase - Phase where solved
+ * @param {number} clubsRevealed - Number of clubs revealed during solve
  * @param {number} totalSeconds - Total time taken
  * @returns {string} - Shareable text
  */
@@ -65,16 +39,14 @@ export const generateShareText = (
   puzzleNumber: number,
   score: number,
   totalGuesses: number,
-  solvedPhase: Phase,
+  clubsRevealed: number,
   totalSeconds: number
 ): string => {
-  const phaseEmojis = ['🟩', '🟨', '🟧', '🟥'];
-  const emojiString = phaseEmojis.slice(0, solvedPhase).join('') +
-                      phaseEmojis.slice(solvedPhase).map(() => '⬛').join('');
+  // Generate emoji based on performance
+  const emoji = score >= 80 ? '🔥' : score >= 60 ? '⚡' : score >= 40 ? '✨' : '💪';
 
   return `CAREER LADDER #${puzzleNumber}
-⚡ ${totalSeconds}s | ${totalGuesses} ${totalGuesses === 1 ? 'guess' : 'guesses'} | ${score} pts
-${emojiString}
+${emoji} ${score} pts | ${totalGuesses} ${totalGuesses === 1 ? 'guess' : 'guesses'} | ${clubsRevealed} clubs revealed | ${totalSeconds}s
 
 Play at: career-ladder.pages.dev`;
 };
