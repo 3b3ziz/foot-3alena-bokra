@@ -37,6 +37,15 @@ export const validateGuess = (guess: string, player: Player): ValidationResult =
   const normalizedGuess = normalize(guess);
   const normalizedCanonical = normalize(player.canonical);
 
+  // 0. Early rejections
+  if (normalizedGuess.length === 0) {
+    return { matched: false, canonical: null };
+  }
+
+  if (normalizedGuess.length < 3) {
+    return { matched: false, canonical: null };
+  }
+
   // 1. Exact match on canonical name
   if (normalizedGuess === normalizedCanonical) {
     return {
@@ -71,56 +80,36 @@ export const validateGuess = (guess: string, player: Player): ValidationResult =
     }
   }
 
-  // 4. Substring matching for short nicknames
-  const lengthRatio = normalizedGuess.length / normalizedCanonical.length;
-
-  // If guess is much shorter (like "ibra" vs "zlatan ibrahimovic")
-  if (lengthRatio < 0.6 && normalizedGuess.length >= 3) {
-    // Check if it's a substring of the canonical name
-    if (normalizedCanonical.includes(normalizedGuess)) {
-      return {
-        matched: true,
-        canonical: player.canonical,
-        confidence: 0.8
-      };
-    }
-
-    // Check if it's a substring of any alias
-    for (const alias of player.aliases) {
-      if (normalize(alias).includes(normalizedGuess)) {
-        return {
-          matched: true,
-          canonical: player.canonical,
-          confidence: 0.8
-        };
-      }
-    }
-
-    // Too short and not a substring - don't match
-    return {
-      matched: false,
-      canonical: null
-    };
-  }
-
-  // 5. Fuse.js fuzzy matching for similar-length strings (typos)
-  const fuse = new Fuse([player.canonical], {
-    threshold: 0.35, // More forgiving for typos
+  // 4. Fuzzy matching with Fuse.js on ALL valid names (canonical + aliases)
+  // This handles typos like "bekham" → "beckham"
+  const searchCorpus = [player.canonical, ...player.aliases];
+  const fuse = new Fuse(searchCorpus, {
+    threshold: 0.30, // Balanced: handles typos but prevents "ronaldo" → "ronaldinho"
     includeScore: true,
   });
 
   const fuseResults = fuse.search(guess);
 
-  if (fuseResults.length > 0 && fuseResults[0].score !== undefined && fuseResults[0].score < 0.35) {
-    return {
-      matched: true,
-      canonical: player.canonical,
-      confidence: 1 - fuseResults[0].score
-    };
+  if (fuseResults.length > 0 && fuseResults[0].score !== undefined && fuseResults[0].score < 0.30) {
+    const matchedName = normalize(fuseResults[0].item);
+    const lengthRatio = normalizedGuess.length / matchedName.length;
+
+    // Prevent substring false positives like "ronaldo" matching "ronaldo de assis moreira"
+    // If the guess is much shorter AND is a substring, reject it
+    if (lengthRatio < 0.7 && matchedName.includes(normalizedGuess)) {
+      // This is likely a partial match (first name, substring), not a typo
+      // Don't match it
+    } else {
+      return {
+        matched: true,
+        canonical: player.canonical,
+        confidence: 1 - fuseResults[0].score
+      };
+    }
   }
 
-  // 6. Provide suggestion if close enough
-  if (fuseResults.length > 0 && fuseResults[0].score !== undefined && fuseResults[0].score < 0.5) {
+  // 5. Provide suggestion if close enough (between 0.30 and 0.45)
+  if (fuseResults.length > 0 && fuseResults[0].score !== undefined && fuseResults[0].score < 0.45) {
     return {
       matched: false,
       canonical: null,
