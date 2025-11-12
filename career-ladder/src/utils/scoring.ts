@@ -7,23 +7,29 @@ export const PHASE_SCORING = {
   phase2: { base: 70, perGuess: -20 },
   phase3: { base: 50, perSecond: -2 },
   phase4: { base: 30, perSecond: -1 }
-};
+} as const;
 
 export const PHASE_NAMES = {
   1: 'Unordered Clubs',
   2: 'Order Revealed',
   3: 'Timer Phase',
   4: 'Full Timeline'
-};
+} as const;
+
+export type Phase = 1 | 2 | 3 | 4;
 
 /**
  * Calculate score based on phase, guesses, and time
- * @param {number} solvedPhase - Phase where player solved (1-4)
+ * @param {Phase} solvedPhase - Phase where player solved (1-4)
  * @param {number} guessesInPhase - Number of guesses in that phase
  * @param {number} secondsElapsed - Seconds elapsed (for phases 3-4)
  * @returns {number} - Final score
  */
-export const calculateScore = (solvedPhase, guessesInPhase, secondsElapsed = 0) => {
+export const calculateScore = (
+  solvedPhase: Phase,
+  guessesInPhase: number,
+  secondsElapsed: number = 0
+): number => {
   let score = 0;
 
   switch (solvedPhase) {
@@ -51,11 +57,17 @@ export const calculateScore = (solvedPhase, guessesInPhase, secondsElapsed = 0) 
  * @param {number} puzzleNumber - Daily puzzle number
  * @param {number} score - Final score
  * @param {number} totalGuesses - Total guesses made
- * @param {number} solvedPhase - Phase where solved
+ * @param {Phase} solvedPhase - Phase where solved
  * @param {number} totalSeconds - Total time taken
  * @returns {string} - Shareable text
  */
-export const generateShareText = (puzzleNumber, score, totalGuesses, solvedPhase, totalSeconds) => {
+export const generateShareText = (
+  puzzleNumber: number,
+  score: number,
+  totalGuesses: number,
+  solvedPhase: Phase,
+  totalSeconds: number
+): string => {
   const phaseEmojis = ['🟩', '🟨', '🟧', '🟥'];
   const emojiString = phaseEmojis.slice(0, solvedPhase).join('') +
                       phaseEmojis.slice(solvedPhase).map(() => '⬛').join('');
