@@ -11,7 +11,6 @@ import type { Player } from '@/data/players';
 const beckham: Player = {
   id: "beckham",
   canonical: "David Beckham",
-  aliases: ["beckham", "david beckham", "becks"],
   clubs: ["Manchester United", "Real Madrid", "LA Galaxy", "Milan", "PSG"],
   years: ["1992-2003", "2003-2007", "2007-2012", "2009-2010", "2013-2013"],
   puzzleConfig: {
@@ -24,7 +23,6 @@ const beckham: Player = {
 const ronaldinho: Player = {
   id: "ronaldinho",
   canonical: "Ronaldinho",
-  aliases: ["ronaldinho gaucho", "ronaldo de assis moreira", "dinho"],
   clubs: ["Grêmio", "PSG", "Barcelona", "Milan", "Flamengo", "Atlético Mineiro"],
   years: ["1998-2001", "2001-2003", "2003-2008", "2008-2011", "2011-2012", "2012-2014"],
   puzzleConfig: {
@@ -37,7 +35,6 @@ const ronaldinho: Player = {
 const ibrahimovic: Player = {
   id: "ibrahimovic",
   canonical: "Zlatan Ibrahimovic",
-  aliases: ["zlatan", "ibra", "ibrahimovic"],
   clubs: ["Ajax", "Juventus", "Inter", "Barcelona", "Milan", "PSG", "Manchester United", "LA Galaxy", "Milan"],
   years: ["2001-2004", "2004-2006", "2006-2009", "2009-2011", "2010-2012", "2012-2016", "2016-2018", "2018-2019", "2020-2023"],
   puzzleConfig: {
@@ -50,7 +47,6 @@ const ibrahimovic: Player = {
 const etoo: Player = {
   id: "eto",
   canonical: "Samuel Eto'o",
-  aliases: ["etoo", "eto o", "samuel etoo", "eto"],
   clubs: ["Real Madrid", "Mallorca", "Barcelona", "Inter", "Anzhi", "Chelsea", "Everton"],
   years: ["1997-2000", "2000-2004", "2004-2009", "2009-2011", "2011-2013", "2013-2014", "2014-2015"],
   puzzleConfig: {
