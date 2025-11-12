@@ -105,13 +105,13 @@ export const validateGuess = (guess: string, player: Player): ValidationResult =
 
   // 5. Fuse.js fuzzy matching for similar-length strings (typos)
   const fuse = new Fuse([player.canonical], {
-    threshold: 0.25, // Stricter threshold
+    threshold: 0.35, // More forgiving for typos
     includeScore: true,
   });
 
   const fuseResults = fuse.search(guess);
 
-  if (fuseResults.length > 0 && fuseResults[0].score !== undefined && fuseResults[0].score < 0.25) {
+  if (fuseResults.length > 0 && fuseResults[0].score !== undefined && fuseResults[0].score < 0.35) {
     return {
       matched: true,
       canonical: player.canonical,
@@ -120,7 +120,7 @@ export const validateGuess = (guess: string, player: Player): ValidationResult =
   }
 
   // 6. Provide suggestion if close enough
-  if (fuseResults.length > 0 && fuseResults[0].score !== undefined && fuseResults[0].score < 0.4) {
+  if (fuseResults.length > 0 && fuseResults[0].score !== undefined && fuseResults[0].score < 0.5) {
     return {
       matched: false,
       canonical: null,
