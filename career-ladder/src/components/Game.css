@@ -1,0 +1,357 @@
+.game-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.game-header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.puzzle-info {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.game-content {
+  flex: 1;
+}
+
+.phase-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.phase-header h2 {
+  font-size: 1.3rem;
+  margin: 0 0 0.5rem 0;
+  color: #333;
+}
+
+.phase-header p {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+}
+
+.timer {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-top: 1rem;
+  color: #667eea;
+}
+
+.timer.urgent {
+  color: #ef4444;
+  animation: pulse 0.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Clubs Display */
+.clubs-container {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.clubs-container.timeline {
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.clubs-container.timeline.full {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.club-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.club-badge.mystery {
+  background: #e5e7eb;
+  color: #9ca3af;
+}
+
+.separator {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #9ca3af;
+}
+
+.arrow {
+  font-size: 1.2rem;
+  color: #9ca3af;
+  font-weight: bold;
+}
+
+.plus-club {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background: #fbbf24;
+  color: white;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.hint-text {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* Guess Form */
+.guess-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.guess-input {
+  flex: 1;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.guess-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.guess-button {
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.1s;
+  white-space: nowrap;
+}
+
+.guess-button:hover {
+  transform: translateY(-1px);
+}
+
+.guess-button:active {
+  transform: translateY(0);
+}
+
+/* Guesses List */
+.guesses-list {
+  margin-top: 2rem;
+}
+
+.guesses-list h3 {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.guess-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.guess-item.wrong {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.guess-item.correct {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.phase-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  background: white;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* Results */
+.result-container {
+  text-align: center;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.result-container h2 {
+  font-size: 2rem;
+  margin: 0 0 1.5rem 0;
+}
+
+.result-container.won h2 {
+  color: #059669;
+}
+
+.result-container.lost h2 {
+  color: #dc2626;
+}
+
+.answer-reveal {
+  margin-bottom: 2rem;
+}
+
+.answer-reveal h3 {
+  font-size: 1.5rem;
+  margin: 0 0 1rem 0;
+  color: #333;
+}
+
+.career-path {
+  font-size: 0.85rem;
+  color: #666;
+  line-height: 1.8;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #333;
+}
+
+.share-button {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.share-button:hover {
+  transform: translateY(-1px);
+}
+
+.share-button:active {
+  transform: translateY(0);
+}
+
+/* Footer */
+.game-footer {
+  margin-top: 2rem;
+  text-align: center;
+  padding: 1rem;
+  color: #9ca3af;
+  font-size: 0.85rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 640px) {
+  .game-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .puzzle-info {
+    gap: 1rem;
+    font-size: 0.85rem;
+  }
+
+  .clubs-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .club-badge {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+  }
+
+  .guess-form {
+    flex-direction: column;
+  }
+
+  .guess-button {
+    width: 100%;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
