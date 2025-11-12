@@ -1,6 +1,6 @@
 /**
  * Fuzzy name matching utility using Fuse.js
- * Handles accents, special characters, and common variations
+ * Simplified: No aliases, just canonical name + fuzzy matching
  */
 
 import Fuse from 'fuse.js';
@@ -30,7 +30,7 @@ export interface ValidationResult {
 /**
  * Check if a guess matches the player using fuzzy matching
  * @param {string} guess - User's guess
- * @param {Player} player - Player object with canonical name and aliases
+ * @param {Player} player - Player object with canonical name
  * @returns {ValidationResult} - Validation result with match status and suggestions
  */
 export const validateGuess = (guess: string, player: Player): ValidationResult => {
@@ -55,36 +55,45 @@ export const validateGuess = (guess: string, player: Player): ValidationResult =
     };
   }
 
-  // 2. Exact match on aliases
-  for (const alias of player.aliases) {
-    const normalizedAlias = normalize(alias);
-    if (normalizedGuess === normalizedAlias) {
-      return {
-        matched: true,
-        canonical: player.canonical,
-        confidence: 1.0
-      };
-    }
-  }
-
-  // 3. Last name only match
+  // 2. Last name extraction
   const canonicalParts = normalizedCanonical.split(' ');
+  const lastName = canonicalParts.length > 1 ? canonicalParts[canonicalParts.length - 1] : normalizedCanonical;
+
+  // 2a. Exact match on last name
+  if (normalizedGuess === lastName) {
+    return {
+      matched: true,
+      canonical: player.canonical,
+      confidence: 0.9
+    };
+  }
+
+  // 2b. Fuzzy match on last name (for typos like "bekham")
   if (canonicalParts.length > 1) {
-    const lastName = canonicalParts[canonicalParts.length - 1];
-    if (normalizedGuess === lastName) {
-      return {
-        matched: true,
-        canonical: player.canonical,
-        confidence: 0.9
-      };
+    const lastNameFuse = new Fuse([lastName], {
+      threshold: 0.30,
+      includeScore: true,
+    });
+
+    const lastNameResults = lastNameFuse.search(guess);
+
+    if (lastNameResults.length > 0 && lastNameResults[0].score !== undefined && lastNameResults[0].score < 0.30) {
+      const lengthDiff = Math.abs(normalizedGuess.length - lastName.length);
+
+      // Only match if lengths are similar (within 2 chars)
+      if (lengthDiff <= 2) {
+        return {
+          matched: true,
+          canonical: player.canonical,
+          confidence: 1 - lastNameResults[0].score
+        };
+      }
     }
   }
 
-  // 4. Fuzzy matching with Fuse.js on ALL valid names (canonical + aliases)
-  // This handles typos like "bekham" → "beckham"
-  const searchCorpus = [player.canonical, ...player.aliases];
-  const fuse = new Fuse(searchCorpus, {
-    threshold: 0.30, // Balanced: handles typos but prevents "ronaldo" → "ronaldinho"
+  // 3. Fuzzy matching on full canonical name (for single-name players or full name typos)
+  const fuse = new Fuse([player.canonical], {
+    threshold: 0.30,
     includeScore: true,
   });
 
@@ -92,14 +101,10 @@ export const validateGuess = (guess: string, player: Player): ValidationResult =
 
   if (fuseResults.length > 0 && fuseResults[0].score !== undefined && fuseResults[0].score < 0.30) {
     const matchedName = normalize(fuseResults[0].item);
-    const lengthRatio = normalizedGuess.length / matchedName.length;
+    const lengthDiff = Math.abs(normalizedGuess.length - matchedName.length);
 
-    // Prevent substring false positives like "ronaldo" matching "ronaldo de assis moreira"
-    // If the guess is much shorter AND is a substring, reject it
-    if (lengthRatio < 0.7 && matchedName.includes(normalizedGuess)) {
-      // This is likely a partial match (first name, substring), not a typo
-      // Don't match it
-    } else {
+    // Only match if lengths are similar (within 2 chars)
+    if (lengthDiff <= 2) {
       return {
         matched: true,
         canonical: player.canonical,
@@ -108,7 +113,7 @@ export const validateGuess = (guess: string, player: Player): ValidationResult =
     }
   }
 
-  // 5. Provide suggestion if close enough (between 0.30 and 0.45)
+  // 4. Provide suggestion if close enough
   if (fuseResults.length > 0 && fuseResults[0].score !== undefined && fuseResults[0].score < 0.45) {
     return {
       matched: false,

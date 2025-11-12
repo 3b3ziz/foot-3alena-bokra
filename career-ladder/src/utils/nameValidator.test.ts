@@ -69,12 +69,6 @@ describe('Fuzzy Name Matching', () => {
       expect(result.canonical).toBe("David Beckham");
     });
 
-    it('should match exact alias', () => {
-      const result = validateGuess("beckham", beckham);
-      expect(result.matched).toBe(true);
-      expect(result.canonical).toBe("David Beckham");
-    });
-
     it('should be case insensitive', () => {
       const result = validateGuess("DAVID BECKHAM", beckham);
       expect(result.matched).toBe(true);
@@ -98,27 +92,6 @@ describe('Fuzzy Name Matching', () => {
     });
   });
 
-  describe('Nickname/Short form matches', () => {
-    it('should match "ibra" for Ibrahimovic', () => {
-      const result = validateGuess("ibra", ibrahimovic);
-      expect(result.matched).toBe(true);
-    });
-
-    it('should match "zlatan" for Ibrahimovic', () => {
-      const result = validateGuess("zlatan", ibrahimovic);
-      expect(result.matched).toBe(true);
-    });
-
-    it('should match "dinho" for Ronaldinho', () => {
-      const result = validateGuess("dinho", ronaldinho);
-      expect(result.matched).toBe(true);
-    });
-
-    it('should match "becks" for Beckham', () => {
-      const result = validateGuess("becks", beckham);
-      expect(result.matched).toBe(true);
-    });
-  });
 
   describe('Typo tolerance - CRITICAL TEST CASES', () => {
     it('should match "bekham" (1 letter typo)', () => {
