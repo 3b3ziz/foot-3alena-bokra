@@ -1,11 +1,26 @@
 // Mock player data with real career paths
 // Each player has clubs in chronological order
 
-export const players = [
+export interface PuzzleConfig {
+  initialClubs: [string, string];
+  thirdClub: string;
+  difficulty: number;
+}
+
+export interface Player {
+  id: string;
+  canonical: string;
+  aliases: string[];
+  clubs: string[];
+  years: string[];
+  puzzleConfig: PuzzleConfig;
+}
+
+export const players: Player[] = [
   {
     id: "ronaldinho",
     canonical: "Ronaldinho",
-    aliases: ["ronaldinho gaucho", "ronaldo de assis moreira", "dinho", "ronaldinho gaucho"],
+    aliases: ["ronaldinho gaucho", "ronaldo de assis moreira", "dinho"],
     clubs: ["Grêmio", "PSG", "Barcelona", "Milan", "Flamengo", "Atlético Mineiro"],
     years: ["1998-2001", "2001-2003", "2003-2008", "2008-2011", "2011-2012", "2012-2014"],
     puzzleConfig: {
@@ -125,7 +140,7 @@ export const players = [
 ];
 
 // Get today's player (mock - will be replaced with API later)
-export const getTodaysPlayer = () => {
+export const getTodaysPlayer = (): Player => {
   // For now, just return a random player
   // Later: use date-based selection
   const daysSinceEpoch = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
