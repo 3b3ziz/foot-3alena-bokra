@@ -168,6 +168,23 @@ export default function Game({ player, puzzleNumber }: GameProps) {
       return;
     }
 
+    // Check if all clubs are revealed
+    const currentHiddenCount = revealedClubs.filter(c => c === null).length;
+
+    if (currentHiddenCount === 0) {
+      // All clubs revealed - count additional guesses
+      const guessesAfterFullReveal = guesses.filter((_, idx) => {
+        // Count guesses made after all clubs were shown
+        return revealedClubs.filter(c => c === null).length === 0;
+      }).length;
+
+      // After 2 wrong guesses with all clubs visible, auto-reveal answer
+      if (guessesAfterFullReveal >= 1) {
+        handleRevealAnswer();
+        return;
+      }
+    }
+
     // Otherwise - reveal a random club
     revealRandomClub();
   };
@@ -414,18 +431,6 @@ export default function Game({ player, puzzleNumber }: GameProps) {
                     ))}
                   </CardContent>
                 </Card>
-              )}
-
-              {/* Reveal Answer Button (when all clubs shown) */}
-              {hiddenCount === 0 && showTimeline && (
-                <Button
-                  onClick={handleRevealAnswer}
-                  variant="outline"
-                  className="w-full gap-2"
-                >
-                  <Eye className="w-4 h-4" />
-                  Give Up & Reveal Answer
-                </Button>
               )}
             </motion.div>
           )}
