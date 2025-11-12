@@ -308,7 +308,7 @@ export default function Game({ player, puzzleNumber }: GameProps) {
                     {guesses.length === 0 && "Start guessing to reveal the career timeline"}
                     {guesses.length > 0 && !showTimeline && "First wrong guess reveals the full career path"}
                     {showTimeline && !timerActive && "Each wrong guess reveals another club"}
-                    {timerActive && "Text locked - no searching! Type actively or a club will auto-reveal"}
+                    {timerActive && "Type actively or a club will auto-reveal when timer expires"}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -329,7 +329,7 @@ export default function Game({ player, puzzleNumber }: GameProps) {
                     </motion.div>
                   ) : (
                     // Timeline view with placeholders
-                    <div className={timerActive ? "select-none" : ""}>
+                    <div>
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
