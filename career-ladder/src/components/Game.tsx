@@ -329,7 +329,7 @@ export default function Game({ player, puzzleNumber }: GameProps) {
                     </motion.div>
                   ) : (
                     // Timeline view with placeholders
-                    <div>
+                    <div className={timerActive ? "select-none" : ""}>
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
