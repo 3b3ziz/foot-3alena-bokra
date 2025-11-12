@@ -1,6 +1,6 @@
 /**
  * Fuzzy name matching utility using Fuse.js
- * Handles accents, special characters, and common variations
+ * Simplified: No aliases, just canonical name + fuzzy matching
  */
 
 import Fuse from 'fuse.js';
@@ -23,93 +23,68 @@ const normalize = (str: string): string => {
 export interface ValidationResult {
   matched: boolean;
   canonical: string | null;
-  confidence?: number;
   suggestion?: string;
 }
 
 /**
  * Check if a guess matches the player using fuzzy matching
  * @param {string} guess - User's guess
- * @param {Player} player - Player object with canonical name and aliases
+ * @param {Player} player - Player object with canonical name
  * @returns {ValidationResult} - Validation result with match status and suggestions
  */
 export const validateGuess = (guess: string, player: Player): ValidationResult => {
   const normalizedGuess = normalize(guess);
-
-  // Exact match on canonical name
   const normalizedCanonical = normalize(player.canonical);
+
+  // Early rejections
+  if (normalizedGuess.length === 0 || normalizedGuess.length < 3) {
+    return { matched: false, canonical: null };
+  }
+
+  // 1. Exact match on canonical name
   if (normalizedGuess === normalizedCanonical) {
-    return {
-      matched: true,
-      canonical: player.canonical,
-      confidence: 1.0
-    };
+    return { matched: true, canonical: player.canonical };
   }
 
-  // Exact match on aliases
-  for (const alias of player.aliases) {
-    const normalizedAlias = normalize(alias);
-    if (normalizedGuess === normalizedAlias) {
-      return {
-        matched: true,
-        canonical: player.canonical,
-        confidence: 1.0
-      };
-    }
-  }
-
-  // Partial match (last name only)
-  const guessParts = normalizedGuess.split(' ');
+  // 2. Extract last name for multi-word names
   const canonicalParts = normalizedCanonical.split(' ');
+  const lastName = canonicalParts.length > 1 ? canonicalParts[canonicalParts.length - 1] : normalizedCanonical;
 
-  // If guess is a single word and matches last part of canonical name
-  if (guessParts.length === 1 && canonicalParts.length > 1) {
-    const lastName = canonicalParts[canonicalParts.length - 1];
-    if (guessParts[0] === lastName) {
-      return {
-        matched: true,
-        canonical: player.canonical,
-        confidence: 0.8
-      };
-    }
+  // Exact match on last name
+  if (normalizedGuess === lastName) {
+    return { matched: true, canonical: player.canonical };
   }
 
-  // Use Fuse.js for fuzzy matching
-  const searchSpace = [
-    player.canonical,
-    ...player.aliases
-  ];
+  // 3. Single Fuse.js pass on both canonical and last name
+  const searchCorpus = canonicalParts.length > 1
+    ? [player.canonical, lastName]
+    : [player.canonical];
 
-  const fuse = new Fuse(searchSpace, {
-    threshold: 0.3, // Lower = more strict (0.0 = exact, 1.0 = anything matches)
-    distance: 100,
+  const fuse = new Fuse(searchCorpus, {
+    threshold: 0.30,
     includeScore: true,
-    keys: []
   });
 
-  const fuseResults = fuse.search(guess);
+  const results = fuse.search(guess);
 
-  if (fuseResults.length > 0 && fuseResults[0].score !== undefined && fuseResults[0].score < 0.3) {
-    // Good match found with Fuse.js
-    return {
-      matched: true,
-      canonical: player.canonical,
-      confidence: 1 - fuseResults[0].score
-    };
+  if (results.length > 0 && results[0].score !== undefined && results[0].score < 0.30) {
+    // Only match if lengths are similar (within 2 chars) to avoid "ronaldo" → "ronaldinho"
+    const matchedName = normalize(results[0].item);
+    const lengthDiff = Math.abs(normalizedGuess.length - matchedName.length);
+
+    if (lengthDiff <= 2) {
+      return { matched: true, canonical: player.canonical };
+    }
   }
 
-  // No match, but provide suggestion if close
-  if (fuseResults.length > 0 && fuseResults[0].score !== undefined && fuseResults[0].score < 0.5) {
+  // 4. Provide suggestion if close enough
+  if (results.length > 0 && results[0].score !== undefined && results[0].score < 0.45) {
     return {
       matched: false,
       canonical: null,
-      confidence: 1 - fuseResults[0].score,
       suggestion: `Did you mean "${player.canonical}"?`
     };
   }
 
-  return {
-    matched: false,
-    canonical: null
-  };
+  return { matched: false, canonical: null };
 };
