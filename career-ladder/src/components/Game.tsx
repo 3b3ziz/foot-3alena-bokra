@@ -197,7 +197,7 @@ export default function Game({ player, puzzleNumber }: GameProps) {
     if (totalTimeIntervalRef.current) clearInterval(totalTimeIntervalRef.current);
   };
 
-  const handleShare = async () => {
+  const handleShare = () => {
     const clubsRevealed = revealedClubs.filter(c => c !== null).length;
     const shareText = generateShareText(
       puzzleNumber,
@@ -206,16 +206,7 @@ export default function Game({ player, puzzleNumber }: GameProps) {
       clubsRevealed,
       totalSeconds
     );
-
-    if (navigator.share) {
-      try {
-        await navigator.share({ text: shareText });
-      } catch (err) {
-        copyToClipboard(shareText);
-      }
-    } else {
-      copyToClipboard(shareText);
-    }
+    copyToClipboard(shareText);
   };
 
   const copyToClipboard = (text: string) => {

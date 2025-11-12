@@ -23,7 +23,6 @@ const normalize = (str: string): string => {
 export interface ValidationResult {
   matched: boolean;
   canonical: string | null;
-  confidence?: number;
   suggestion?: string;
 }
 
@@ -37,94 +36,55 @@ export const validateGuess = (guess: string, player: Player): ValidationResult =
   const normalizedGuess = normalize(guess);
   const normalizedCanonical = normalize(player.canonical);
 
-  // 0. Early rejections
-  if (normalizedGuess.length === 0) {
-    return { matched: false, canonical: null };
-  }
-
-  if (normalizedGuess.length < 3) {
+  // Early rejections
+  if (normalizedGuess.length === 0 || normalizedGuess.length < 3) {
     return { matched: false, canonical: null };
   }
 
   // 1. Exact match on canonical name
   if (normalizedGuess === normalizedCanonical) {
-    return {
-      matched: true,
-      canonical: player.canonical,
-      confidence: 1.0
-    };
+    return { matched: true, canonical: player.canonical };
   }
 
-  // 2. Last name extraction
+  // 2. Extract last name for multi-word names
   const canonicalParts = normalizedCanonical.split(' ');
   const lastName = canonicalParts.length > 1 ? canonicalParts[canonicalParts.length - 1] : normalizedCanonical;
 
-  // 2a. Exact match on last name
+  // Exact match on last name
   if (normalizedGuess === lastName) {
-    return {
-      matched: true,
-      canonical: player.canonical,
-      confidence: 0.9
-    };
+    return { matched: true, canonical: player.canonical };
   }
 
-  // 2b. Fuzzy match on last name (for typos like "bekham")
-  if (canonicalParts.length > 1) {
-    const lastNameFuse = new Fuse([lastName], {
-      threshold: 0.30,
-      includeScore: true,
-    });
+  // 3. Single Fuse.js pass on both canonical and last name
+  const searchCorpus = canonicalParts.length > 1
+    ? [player.canonical, lastName]
+    : [player.canonical];
 
-    const lastNameResults = lastNameFuse.search(guess);
-
-    if (lastNameResults.length > 0 && lastNameResults[0].score !== undefined && lastNameResults[0].score < 0.30) {
-      const lengthDiff = Math.abs(normalizedGuess.length - lastName.length);
-
-      // Only match if lengths are similar (within 2 chars)
-      if (lengthDiff <= 2) {
-        return {
-          matched: true,
-          canonical: player.canonical,
-          confidence: 1 - lastNameResults[0].score
-        };
-      }
-    }
-  }
-
-  // 3. Fuzzy matching on full canonical name (for single-name players or full name typos)
-  const fuse = new Fuse([player.canonical], {
+  const fuse = new Fuse(searchCorpus, {
     threshold: 0.30,
     includeScore: true,
   });
 
-  const fuseResults = fuse.search(guess);
+  const results = fuse.search(guess);
 
-  if (fuseResults.length > 0 && fuseResults[0].score !== undefined && fuseResults[0].score < 0.30) {
-    const matchedName = normalize(fuseResults[0].item);
+  if (results.length > 0 && results[0].score !== undefined && results[0].score < 0.30) {
+    // Only match if lengths are similar (within 2 chars) to avoid "ronaldo" → "ronaldinho"
+    const matchedName = normalize(results[0].item);
     const lengthDiff = Math.abs(normalizedGuess.length - matchedName.length);
 
-    // Only match if lengths are similar (within 2 chars)
     if (lengthDiff <= 2) {
-      return {
-        matched: true,
-        canonical: player.canonical,
-        confidence: 1 - fuseResults[0].score
-      };
+      return { matched: true, canonical: player.canonical };
     }
   }
 
   // 4. Provide suggestion if close enough
-  if (fuseResults.length > 0 && fuseResults[0].score !== undefined && fuseResults[0].score < 0.45) {
+  if (results.length > 0 && results[0].score !== undefined && results[0].score < 0.45) {
     return {
       matched: false,
       canonical: null,
-      confidence: 1 - fuseResults[0].score,
       suggestion: `Did you mean "${player.canonical}"?`
     };
   }
 
-  return {
-    matched: false,
-    canonical: null
-  };
+  return { matched: false, canonical: null };
 };
