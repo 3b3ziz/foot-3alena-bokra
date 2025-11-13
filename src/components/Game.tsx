@@ -32,6 +32,7 @@ export default function Game({ player, puzzleNumber }: GameProps) {
   const [gameState, setGameState] = useState<GameState>('playing');
   const [suggestion, setSuggestion] = useState<string>('');
   const [shake, setShake] = useState(false);
+  const [guessCountWhenFullyRevealed, setGuessCountWhenFullyRevealed] = useState<number | null>(null);
 
   // Timer state
   const [timerActive, setTimerActive] = useState(false);
@@ -172,14 +173,15 @@ export default function Game({ player, puzzleNumber }: GameProps) {
     const currentHiddenCount = revealedClubs.filter(c => c === null).length;
 
     if (currentHiddenCount === 0) {
-      // All clubs revealed - count additional guesses
-      const guessesAfterFullReveal = guesses.filter((_, idx) => {
-        // Count guesses made after all clubs were shown
-        return revealedClubs.filter(c => c === null).length === 0;
-      }).length;
+      // Track when all clubs were first revealed
+      const revealedAtGuess = guessCountWhenFullyRevealed ?? guessCount;
+
+      if (guessCountWhenFullyRevealed === null) {
+        setGuessCountWhenFullyRevealed(guessCount);
+      }
 
       // After 2 wrong guesses with all clubs visible, auto-reveal answer
-      if (guessesAfterFullReveal >= 1) {
+      if (guessCount >= revealedAtGuess + 2) {
         handleRevealAnswer();
         return;
       }
