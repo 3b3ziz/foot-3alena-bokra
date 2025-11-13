@@ -12,7 +12,7 @@ function App() {
     setPlayer(todaysPlayer);
 
     // Calculate puzzle number (days since launch)
-    const launchDate = new Date('2024-01-01');
+    const launchDate = new Date('2025-11-12');
     const today = new Date();
     const daysSinceLaunch = Math.floor((today.getTime() - launchDate.getTime()) / (1000 * 60 * 60 * 24));
     setPuzzleNumber(daysSinceLaunch);
