@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
+import { usePostHog } from 'posthog-js/react'
 import Game from './components/Game'
 import { getTodaysPlayer, type Player } from './data/players'
 
 function App() {
+  const posthog = usePostHog();
   const [player, setPlayer] = useState<Player | null>(null);
   const [puzzleNumber, setPuzzleNumber] = useState<number>(0);
 
@@ -16,7 +18,12 @@ function App() {
     const today = new Date();
     const daysSinceLaunch = Math.floor((today.getTime() - launchDate.getTime()) / (1000 * 60 * 60 * 24));
     setPuzzleNumber(daysSinceLaunch);
-  }, []);
+    
+    // Track puzzle load
+    posthog?.capture('puzzle_loaded', {
+      puzzle_number: daysSinceLaunch,
+    });
+  }, [posthog]);
 
   if (!player) {
     return (

@@ -6,32 +6,37 @@
 
 ## Deployment Steps
 
-### Option 1: Automatic Deployment via Git
+### Option 1: Automatic Deployment via Git (Recommended)
 
-1. **Push to GitHub**
+1. **Push your code to GitHub** (if not already)
    ```bash
    git add .
-   git commit -m "Initial Career Ladder MVP"
+   git commit -m "Setup for Cloudflare Pages"
    git push origin main
    ```
 
-2. **Connect to Cloudflare Pages**
+2. **Create a new Cloudflare Pages project**
    - Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
-   - Navigate to Pages
-   - Click "Create a project"
-   - Connect your GitHub repository
+   - Navigate to **Workers & Pages** → **Pages**
+   - Click **"Create a project"**
+   - Select **"Connect to Git"**
+   - Choose your repository (`foot-3alena-bokra`)
 
 3. **Configure Build Settings**
+   - **Project name**: `career-ladder` (or your preferred name)
+   - **Production branch**: `main` (or your default branch)
    - **Build command**: `npm run build`
    - **Build output directory**: `dist`
-   - **Node version**: 18 or higher
+   - **Root directory**: `/` (leave empty or set to root)
+   - **Node version**: 22 (or 18+)
 
 4. **Deploy**
-   - Click "Save and Deploy"
+   - Click **"Save and Deploy"**
    - Cloudflare will automatically build and deploy your app
    - You'll get a URL like: `career-ladder-xxx.pages.dev`
+   - Future pushes to your main branch will auto-deploy
 
-### Option 2: Direct Upload via Wrangler CLI
+### Option 2: Direct Upload via Wrangler CLI (One-time deploy)
 
 1. **Install Wrangler**
    ```bash
@@ -55,7 +60,50 @@
 
 ## Environment Variables
 
-Currently, the app runs entirely client-side with no environment variables needed.
+### Adding Environment Variables in Cloudflare Pages
+
+For PostHog analytics, you need to add these environment variables:
+
+1. **Go to your Cloudflare Pages project**
+   - Navigate to your project in [Cloudflare Dashboard](https://dash.cloudflare.com/)
+   - Go to **Workers & Pages** → **Pages** → Your project
+
+2. **Add Environment Variables**
+   - Click on **Settings** → **Environment variables**
+   - Click **"Add variable"** for each variable:
+
+   **Production environment:**
+   - Variable name: `VITE_PUBLIC_POSTHOG_KEY`
+   - Variable type: **Secret** (recommended for API keys)
+   - Value: Your PostHog project API key
+   - Click **"Save"**
+
+   - Variable name: `VITE_PUBLIC_POSTHOG_HOST`
+   - Variable type: **Text** (URL, not sensitive)
+   - Value: Your PostHog host URL (e.g., `https://us.i.posthog.com` or `https://eu.i.posthog.com`)
+   - Click **"Save"**
+
+3. **Add to Preview/Branch environments (optional)**
+   - You can add the same variables to preview environments
+   - Or use different values for testing
+
+4. **Redeploy**
+   - After adding variables, trigger a new deployment
+   - Go to **Deployments** → Click **"Retry deployment"** on the latest build
+   - Or push a new commit to trigger auto-deploy
+
+### Important Notes
+
+- **Variable Types** (per [Cloudflare documentation](https://developers.cloudflare.com/workers/configuration/environment-variables/)):
+  - Use **Secret** for `VITE_PUBLIC_POSTHOG_KEY` (API key - sensitive)
+    - Secrets hide the value in the dashboard UI (shows asterisks)
+    - Prevents accidental exposure in logs or screenshots
+    - Even though `VITE_PUBLIC_*` variables are exposed in client code, storing as Secret follows security best practices
+  - Use **Text** for `VITE_PUBLIC_POSTHOG_HOST` (URL - not sensitive)
+- Environment variables are available at build time for Vite
+- Variables prefixed with `VITE_PUBLIC_` are exposed to the client-side code
+- Never commit sensitive keys to your repository
+- Use Cloudflare's environment variables for all secrets
 
 ## Custom Domain (Optional)
 

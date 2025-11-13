@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Timer, Trophy, Clock, Target, Share2, CheckCircle2, XCircle, ArrowRight, Eye } from 'lucide-react';
+import { usePostHog } from 'posthog-js/react';
 import { validateGuess } from '@/utils/nameValidator';
 import { calculateScore, generateShareText } from '@/utils/scoring';
 import type { Player } from '@/data/players';
@@ -24,6 +25,8 @@ interface GameProps {
 }
 
 export default function Game({ player, puzzleNumber }: GameProps) {
+  const posthog = usePostHog();
+  
   // Game state
   const [revealedClubs, setRevealedClubs] = useState<(string | null)[]>([]);
   const [showTimeline, setShowTimeline] = useState(false);
@@ -60,7 +63,13 @@ export default function Game({ player, puzzleNumber }: GameProps) {
     timeline[idx2] = club2;
 
     setRevealedClubs(timeline);
-  }, [player]);
+    
+    // Track game start
+    posthog?.capture('game_started', {
+      puzzle_number: puzzleNumber,
+      total_clubs: player.clubs.length,
+    });
+  }, [player, puzzleNumber, posthog]);
 
   // Total time counter
   useEffect(() => {
@@ -144,6 +153,18 @@ export default function Game({ player, puzzleNumber }: GameProps) {
 
       if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
       if (totalTimeIntervalRef.current) clearInterval(totalTimeIntervalRef.current);
+      
+      // Track game completion
+      const revealedCount = revealedClubs.filter(c => c !== null).length;
+      posthog?.capture('game_completed', {
+        puzzle_number: puzzleNumber,
+        outcome: 'won',
+        score: finalScore,
+        total_guesses: guesses.length + 1,
+        total_time_seconds: totalSeconds,
+        clubs_revealed: revealedCount,
+        timer_used: timerActive,
+      });
     } else {
       // Wrong guess
       setShake(true);
@@ -165,6 +186,15 @@ export default function Game({ player, puzzleNumber }: GameProps) {
     // After 3 guesses - start timer
     if (guessCount === 3 && !timerActive) {
       setTimerActive(true);
+      
+      // Track timer activation (struggle indicator)
+      const revealedCount = revealedClubs.filter(c => c !== null).length;
+      posthog?.capture('timer_activated', {
+        puzzle_number: puzzleNumber,
+        guess_count: guessCount,
+        clubs_revealed: revealedCount,
+      });
+      
       return;
     }
 
@@ -173,7 +203,7 @@ export default function Game({ player, puzzleNumber }: GameProps) {
 
     if (currentHiddenCount === 0) {
       // All clubs revealed - count additional guesses
-      const guessesAfterFullReveal = guesses.filter((_, idx) => {
+      const guessesAfterFullReveal = guesses.filter(() => {
         // Count guesses made after all clubs were shown
         return revealedClubs.filter(c => c === null).length === 0;
       }).length;
@@ -195,6 +225,17 @@ export default function Game({ player, puzzleNumber }: GameProps) {
 
     if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
     if (totalTimeIntervalRef.current) clearInterval(totalTimeIntervalRef.current);
+    
+    // Track game loss
+    const revealedCount = revealedClubs.filter(c => c !== null).length;
+    posthog?.capture('game_completed', {
+      puzzle_number: puzzleNumber,
+      outcome: 'lost',
+      total_guesses: guesses.length,
+      total_time_seconds: totalSeconds,
+      clubs_revealed: revealedCount,
+      timer_used: timerActive,
+    });
   };
 
   const handleShare = () => {
@@ -207,6 +248,15 @@ export default function Game({ player, puzzleNumber }: GameProps) {
       totalSeconds
     );
     copyToClipboard(shareText);
+    
+    // Track share click
+    posthog?.capture('share_clicked', {
+      puzzle_number: puzzleNumber,
+      score: score,
+      total_guesses: guesses.length,
+      clubs_revealed: clubsRevealed,
+      total_time_seconds: totalSeconds,
+    });
   };
 
   const copyToClipboard = (text: string) => {
