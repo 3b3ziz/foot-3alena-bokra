@@ -1,0 +1,72 @@
+# Legendary Players for Career Ladder
+# Format: Transfermarkt URL (one per line)
+
+# Modern Era GOATs
+https://www.transfermarkt.com/lionel-messi/profil/spieler/28003
+https://www.transfermarkt.com/cristiano-ronaldo/profil/spieler/8198
+
+# 2000s-2010s Legends
+https://www.transfermarkt.com/ronaldinho/profil/spieler/3373
+https://www.transfermarkt.com/zlatan-ibrahimovic/profil/spieler/3455
+https://www.transfermarkt.com/andrea-pirlo/profil/spieler/5817
+https://www.transfermarkt.com/david-beckham/profil/spieler/3139
+https://www.transfermarkt.com/thierry-henry/profil/spieler/3207
+https://www.transfermarkt.com/zinedine-zidane/profil/spieler/3111
+https://www.transfermarkt.com/luis-figo/profil/spieler/364
+https://www.transfermarkt.com/ronaldo/profil/spieler/3140
+https://www.transfermarkt.com/samuel-etoo/profil/spieler/4257
+https://www.transfermarkt.com/clarence-seedorf/profil/spieler/548
+https://www.transfermarkt.com/xavi/profil/spieler/7607
+https://www.transfermarkt.com/andres-iniesta/profil/spieler/7600
+https://www.transfermarkt.com/wayne-rooney/profil/spieler/3332
+https://www.transfermarkt.com/frank-lampard/profil/spieler/3163
+https://www.transfermarkt.com/steven-gerrard/profil/spieler/3109
+https://www.transfermarkt.com/didier-drogba/profil/spieler/3389
+https://www.transfermarkt.com/samuel-etoo/profil/spieler/4257
+https://www.transfermarkt.com/robin-van-persie/profil/spieler/4380
+https://www.transfermarkt.com/arjen-robben/profil/spieler/4360
+https://www.transfermarkt.com/franck-ribery/profil/spieler/7600
+
+# Recent Legends (2010s-2020s)
+https://www.transfermarkt.com/neymar/profil/spieler/68290
+https://www.transfermarkt.com/sergio-ramos/profil/spieler/25557
+https://www.transfermarkt.com/gareth-bale/profil/spieler/39381
+https://www.transfermarkt.com/luka-modric/profil/spieler/27992
+https://www.transfermarkt.com/robert-lewandowski/profil/spieler/38253
+https://www.transfermarkt.com/luis-suarez/profil/spieler/44352
+https://www.transfermarkt.com/eden-hazard/profil/spieler/50202
+https://www.transfermarkt.com/toni-kroos/profil/spieler/31909
+https://www.transfermarkt.com/karim-benzema/profil/spieler/18922
+https://www.transfermarkt.com/manuel-neuer/profil/spieler/17259
+
+# 90s Legends
+https://www.transfermarkt.com/diego-maradona/profil/spieler/4153
+https://www.transfermarkt.com/paolo-maldini/profil/spieler/5806
+https://www.transfermarkt.com/roberto-baggio/profil/spieler/5805
+https://www.transfermarkt.com/roberto-carlos/profil/spieler/3701
+https://www.transfermarkt.com/cafu/profil/spieler/3370
+https://www.transfermarkt.com/rivaldo/profil/spieler/3368
+https://www.transfermarkt.com/raul/profil/spieler/7349
+https://www.transfermarkt.com/francesco-totti/profil/spieler/7769
+https://www.transfermarkt.com/andriy-shevchenko/profil/spieler/3424
+
+# Premier League Icons
+https://www.transfermarkt.com/patrick-vieira/profil/spieler/3155
+https://www.transfermarkt.com/ryan-giggs/profil/spieler/3514
+https://www.transfermarkt.com/paul-scholes/profil/spieler/3519
+https://www.transfermarkt.com/alan-shearer/profil/spieler/3202
+https://www.transfermarkt.com/fernando-torres/profil/spieler/7767
+https://www.transfermarkt.com/sergio-aguero/profil/spieler/26399
+
+# Serie A Legends
+https://www.transfermarkt.com/alessandro-del-piero/profil/spieler/5808
+https://www.transfermarkt.com/gianluigi-buffon/profil/spieler/5023
+https://www.transfermarkt.com/hernan-crespo/profil/spieler/3460
+https://www.transfermarkt.com/filippo-inzaghi/profil/spieler/3602
+
+# La Liga Icons
+https://www.transfermarkt.com/carles-puyol/profil/spieler/3096
+https://www.transfermarkt.com/iker-casillas/profil/spieler/5366
+https://www.transfermarkt.com/xabi-alonso/profil/spieler/7476
+https://www.transfermarkt.com/david-villa/profil/spieler/7764
+https://www.transfermarkt.com/carlos-puyol/profil/spieler/3096
