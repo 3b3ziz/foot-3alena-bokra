@@ -1,11 +1,35 @@
-# Legendary Players for Career Ladder
+# Career Ladder Player List
+# Mix of current stars + legends for broad appeal
 # Format: Transfermarkt URL (one per line)
 
-# Modern Era GOATs
+# ===== CURRENT SUPERSTARS (2020s) =====
+https://www.transfermarkt.com/erling-haaland/profil/spieler/418560
+https://www.transfermarkt.com/kylian-mbappe/profil/spieler/342229
+https://www.transfermarkt.com/mohamed-salah/profil/spieler/148455
+https://www.transfermarkt.com/kevin-de-bruyne/profil/spieler/88755
+https://www.transfermarkt.com/harry-kane/profil/spieler/132098
+https://www.transfermarkt.com/vinicius-junior/profil/spieler/371998
+https://www.transfermarkt.com/jude-bellingham/profil/spieler/581678
+https://www.transfermarkt.com/phil-foden/profil/spieler/406635
+https://www.transfermarkt.com/bruno-fernandes/profil/spieler/240306
+https://www.transfermarkt.com/son-heung-min/profil/spieler/91948
+
+# ===== MODERN GOATs (Still Playing) =====
 https://www.transfermarkt.com/lionel-messi/profil/spieler/28003
 https://www.transfermarkt.com/cristiano-ronaldo/profil/spieler/8198
+https://www.transfermarkt.com/neymar/profil/spieler/68290
+https://www.transfermarkt.com/robert-lewandowski/profil/spieler/38253
+https://www.transfermarkt.com/luka-modric/profil/spieler/27992
+https://www.transfermarkt.com/karim-benzema/profil/spieler/18922
 
-# 2000s-2010s Legends
+# ===== 2010s LEGENDS (Recently Retired) =====
+https://www.transfermarkt.com/sergio-ramos/profil/spieler/25557
+https://www.transfermarkt.com/gareth-bale/profil/spieler/39381
+https://www.transfermarkt.com/eden-hazard/profil/spieler/50202
+https://www.transfermarkt.com/luis-suarez/profil/spieler/44352
+https://www.transfermarkt.com/sergio-aguero/profil/spieler/26399
+
+# ===== 2000s-2010s LEGENDS =====
 https://www.transfermarkt.com/ronaldinho/profil/spieler/3373
 https://www.transfermarkt.com/zlatan-ibrahimovic/profil/spieler/3455
 https://www.transfermarkt.com/andrea-pirlo/profil/spieler/5817
